@@ -18,10 +18,11 @@ class SearchController extends Controller
 
         $response = Http::timeout(10)->post(env('EMBEDDING_SERVICE_URL'), ['text' => $query]);
         $embedding = $response->successful() ? $response->json('embedding') : $this->mockEmbedding($query);
+        $embeddingVector = '[' . implode(',', $embedding) . ']';
 
         $posts = Post::query()
             ->select('posts.*')
-            ->selectRaw('(1 - (posts.embedding <=> ?)) AS similarity', [$embedding])
+            ->selectRaw('(1 - (posts.embedding <=> ?::vector)) AS similarity', [$embeddingVector])
             ->orderByDesc('similarity')
             ->limit(10)
             ->get();

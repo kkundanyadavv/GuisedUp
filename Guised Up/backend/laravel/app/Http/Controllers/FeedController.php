@@ -18,7 +18,7 @@ class FeedController extends Controller
             ->select('posts.*')
             ->selectRaw("(
                 0.45 * posts.authenticity_score +
-                0.25 * CASE WHEN follows.follower_id IS NOT NULL THEN 1 ELSE 0 END +
+                0.25 * CASE WHEN follows.followed_id IS NOT NULL THEN 1 ELSE 0 END +
                 0.20 * COALESCE(similarity_score, 0) +
                 0.10 * GREATEST(0, 1 - (EXTRACT(EPOCH FROM (NOW() - posts.created_at)) / 86400 / 10))
             ) AS rank_score")
